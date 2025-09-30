@@ -69,10 +69,10 @@ export const InteractiveGrid = () => {
       let animationFrame: number;
       let velocityX = 0;
       let velocityY = 0;
-      let currentX = -1000; // Start offset so cards are visible
-      let currentY = -1000;
+      let currentX = -400;
+      let currentY = -300;
+      let isMouseInSection = false;
 
-      // Initialize the grid position immediately
       gsap.set(grid, {
         x: currentX,
         y: currentY,
@@ -84,42 +84,54 @@ export const InteractiveGrid = () => {
         const clientY = e.clientY - rect.top;
         const { width, height } = rect;
 
-        // Calculate mouse position relative to section center (-1 to 1)
         const xPercent = (clientX / width - 0.5) * 2;
         const yPercent = (clientY / height - 0.5) * 2;
 
-        // Set velocity based on distance from center
-        const maxVelocity = 9;
+        const maxVelocity = 6;
         velocityX = -xPercent * maxVelocity;
         velocityY = -yPercent * maxVelocity;
       };
 
-      const animate = () => {
-        // Continuously update position based on velocity
-        currentX += velocityX;
-        currentY += velocityY;
+      const handleMouseEnter = () => {
+        isMouseInSection = true;
+      };
 
-        // Apply the transform
-        gsap.set(grid, {
-          x: currentX,
-          y: currentY,
-        });
+      const handleMouseLeave = () => {
+        isMouseInSection = false;
+        // Gradually slow down the velocity when mouse leaves
+        velocityX = 0;
+        velocityY = 0;
+      };
+
+      const animate = () => {
+        if (isMouseInSection) {
+          currentX += velocityX;
+          currentY += velocityY;
+
+          gsap.set(grid, {
+            x: currentX,
+            y: currentY,
+          });
+        }
 
         animationFrame = requestAnimationFrame(animate);
       };
 
       section.addEventListener("mousemove", handleMouseMove);
+      section.addEventListener("mouseenter", handleMouseEnter);
+      section.addEventListener("mouseleave", handleMouseLeave);
       animate();
 
       return () => {
         section.removeEventListener("mousemove", handleMouseMove);
+        section.removeEventListener("mouseenter", handleMouseEnter);
+        section.removeEventListener("mouseleave", handleMouseLeave);
         cancelAnimationFrame(animationFrame);
       };
     },
     { scope: sectionRef }
   );
 
-  // Animate title when card is hovered
   useGSAP(
     () => {
       if (hoveredCard !== null) {
@@ -144,7 +156,6 @@ export const InteractiveGrid = () => {
     { dependencies: [hoveredCard] }
   );
 
-  // Create infinite grid by repeating cards with irregular positioning
   const infiniteCards = [
     ...cards,
     ...cards,
@@ -156,21 +167,59 @@ export const InteractiveGrid = () => {
     ...cards,
   ];
 
-  // Generate irregular positions for each card
-  const getCardPosition = (index: number) => {
-    const row = Math.floor(index / 4);
-    const col = index % 4;
+  // Generate truly random positions without overlap
+  const getCardPositions = () => {
+    const positions: Array<{
+      left: number;
+      top: number;
+      card: (typeof cards)[0];
+    }> = [];
+    const margin = 50; // Minimum space between cards
 
-    // Add some randomness to positioning (but keep it consistent per index)
-    const seed = index * 2654435761;
-    const randomX = ((seed % 60) - 30) * 1;
-    const randomY = ((seed % 80) - 40) * 0.8;
+    infiniteCards.forEach((card, index) => {
+      let attempts = 0;
+      let validPosition = false;
+      let newPos = { left: 0, top: 0 };
 
-    return {
-      left: col * 600 + randomX,
-      top: row * 600 + randomY,
-    };
+      while (!validPosition && attempts < 100) {
+        // Generate random position with better spread
+        const seed = index * 2654435761 + attempts * 1234567;
+        const baseX = (index % 7) * 450;
+        const baseY = Math.floor(index / 7) * 450;
+        const randomOffsetX = (seed % 200) - 100;
+        const randomOffsetY = ((seed >> 8) % 200) - 100;
+
+        newPos = {
+          left: baseX + randomOffsetX - 600,
+          top: baseY + randomOffsetY - 500,
+        };
+
+        // Check if position overlaps with existing cards
+        validPosition =
+          positions.length === 0 ||
+          positions.every((pos) => {
+            const distanceX = Math.abs(newPos.left - pos.left);
+            const distanceY = Math.abs(newPos.top - pos.top);
+
+            // Check if rectangles overlap with margin
+            const noOverlapX =
+              distanceX > (card.width + pos.card.width) / 2 + margin;
+            const noOverlapY =
+              distanceY > (card.height + pos.card.height) / 2 + margin;
+
+            return noOverlapX || noOverlapY;
+          });
+
+        attempts++;
+      }
+
+      positions.push({ ...newPos, card });
+    });
+
+    return positions.map((pos) => ({ left: pos.left, top: pos.top }));
   };
+
+  const cardPositions = getCardPositions();
 
   return (
     <section
@@ -183,11 +232,11 @@ export const InteractiveGrid = () => {
         style={{
           width: "400vw",
           height: "400vh",
-          transform: "translate(-50%, -50%) translate(-1000px, -1000px)",
+          transform: "translate(-50%, -50%) translate(-400px, -300px)",
         }}
       >
         {infiniteCards.map((card, index) => {
-          const position = getCardPosition(index);
+          const position = cardPositions[index];
 
           return (
             <div
@@ -218,7 +267,6 @@ export const InteractiveGrid = () => {
                 </div>
               </Link>
 
-              {/* Title appears on the LEFT side of card on hover */}
               {hoveredCard === index && (
                 <div
                   ref={(el) => {
