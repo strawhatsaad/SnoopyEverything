@@ -5,6 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const cards = [
   {
@@ -56,7 +59,9 @@ const cards = [
 
 export const InteractiveGrid = () => {
   const gridContainerRef = useRef<HTMLDivElement>(null);
+  const interactiveAreaRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const titleRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
   const cardRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
@@ -64,8 +69,27 @@ export const InteractiveGrid = () => {
   useGSAP(
     () => {
       const grid = gridContainerRef.current;
+      const interactiveArea = interactiveAreaRef.current;
       const section = sectionRef.current;
-      if (!grid || !section) return;
+      const title = titleRef.current;
+      if (!grid || !interactiveArea || !section || !title) return;
+
+      // Title animation - slides in from left when section is 30% in view
+      gsap.fromTo(
+        title,
+        { x: -200, opacity: 0 },
+        {
+          x: 0,
+          opacity: 1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: section,
+            start: "top 40%",
+            end: "top 0%",
+            scrub: 1,
+          },
+        }
+      );
 
       let animationFrame: number;
       let velocityX = 0;
@@ -99,7 +123,6 @@ export const InteractiveGrid = () => {
 
       const handleMouseLeave = () => {
         isMouseInSection = false;
-        // Gradually slow down the velocity when mouse leaves
         velocityX = 0;
         velocityY = 0;
       };
@@ -157,13 +180,12 @@ export const InteractiveGrid = () => {
 
         if (cardEl) {
           gsap.to(cardEl, {
-            scale: 1.12,
+            scale: 1.08,
             duration: 0.4,
             ease: "power2.out",
           });
         }
       } else {
-        // Reset all cards when no hover
         Object.values(cardRefs.current).forEach((cardEl) => {
           if (cardEl) {
             gsap.to(cardEl, {
@@ -189,14 +211,13 @@ export const InteractiveGrid = () => {
     ...cards,
   ];
 
-  // Generate truly random positions without overlap
   const getCardPositions = () => {
     const positions: Array<{
       left: number;
       top: number;
       card: (typeof cards)[0];
     }> = [];
-    const margin = 70; // Slightly increased minimum space between cards
+    const margin = 70;
 
     infiniteCards.forEach((card, index) => {
       let attempts = 0;
@@ -204,7 +225,6 @@ export const InteractiveGrid = () => {
       let newPos = { left: 0, top: 0 };
 
       while (!validPosition && attempts < 100) {
-        // Generate random position with better spread
         const seed = index * 2654435761 + attempts * 1234567;
         const baseX = (index % 7) * 450;
         const baseY = Math.floor(index / 7) * 450;
@@ -216,14 +236,12 @@ export const InteractiveGrid = () => {
           top: baseY + randomOffsetY - 500,
         };
 
-        // Check if position overlaps with existing cards
         validPosition =
           positions.length === 0 ||
           positions.every((pos) => {
             const distanceX = Math.abs(newPos.left - pos.left);
             const distanceY = Math.abs(newPos.top - pos.top);
 
-            // Check if rectangles overlap with margin
             const noOverlapX =
               distanceX > (card.width + pos.card.width) / 2 + margin;
             const noOverlapY =
@@ -246,67 +264,83 @@ export const InteractiveGrid = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full min-h-screen overflow-hidden bg-black"
+      className="relative w-full min-h-screen bg-[rgb(8,8,8)]"
     >
+      {/* Title Container - Separate from interactive area */}
+      <div className="relative z-10 py-20 px-8 lg:px-20 bg-[linear-gradient(to_bottom,rgba(8,8,8,1),rgba(8,8,8,0.8),rgba(8,8,8,0.6),rgba(8,8,8,0))]">
+        <h2
+          ref={titleRef}
+          className="text-7xl lg:text-9xl font-bold text-white opacity-0"
+        >
+          Our Projects
+        </h2>
+      </div>
+
+      {/* Interactive Cards Container */}
       <div
-        ref={gridContainerRef}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-        style={{
-          width: "400vw",
-          height: "400vh",
-          transform: "translate(-50%, -50%) translate(-400px, -300px)",
-        }}
+        ref={interactiveAreaRef}
+        className="absolute inset-0 overflow-hidden"
       >
-        {infiniteCards.map((card, index) => {
-          const position = cardPositions[index];
+        <div
+          ref={gridContainerRef}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+          style={{
+            width: "400vw",
+            height: "400vh",
+            transform: "translate(-50%, -50%) translate(-400px, -300px)",
+          }}
+        >
+          {infiniteCards.map((card, index) => {
+            const position = cardPositions[index];
 
-          return (
-            <div
-              key={`${card.id}-${index}`}
-              ref={(el) => {
-                cardRefs.current[index] = el;
-              }}
-              className="absolute"
-              style={{
-                left: `${position.left}px`,
-                top: `${position.top}px`,
-                width: `${card.width}px`,
-                height: `${card.height}px`,
-              }}
-            >
-              <Link
-                href={card.url}
-                className="block relative overflow-hidden rounded-lg group cursor-pointer h-full w-full"
-                onMouseEnter={() => setHoveredCard(index)}
-                onMouseLeave={() => setHoveredCard(null)}
+            return (
+              <div
+                key={`${card.id}-${index}`}
+                ref={(el) => {
+                  cardRefs.current[index] = el;
+                }}
+                className="absolute"
+                style={{
+                  left: `${position.left}px`,
+                  top: `${position.top}px`,
+                  width: `${card.width}px`,
+                  height: `${card.height}px`,
+                }}
               >
-                <div className="relative w-full h-full">
-                  <Image
-                    src={card.imgSrc}
-                    alt={card.title}
-                    fill
-                    className="object-cover"
-                    sizes={`${card.width}px`}
-                  />
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-300" />
-                </div>
-              </Link>
-
-              {hoveredCard === index && (
-                <div
-                  ref={(el) => {
-                    titleRefs.current[index] = el;
-                  }}
-                  className="absolute top-1/2 right-[105%] -translate-y-1/2 z-10 pointer-events-none whitespace-nowrap"
+                <Link
+                  href={card.url}
+                  className="block relative overflow-hidden rounded-lg group cursor-pointer h-full w-full"
+                  onMouseEnter={() => setHoveredCard(index)}
+                  onMouseLeave={() => setHoveredCard(null)}
                 >
-                  <h2 className="text-white text-5xl font-bold tracking-tight drop-shadow-2xl">
-                    {card.title}
-                  </h2>
-                </div>
-              )}
-            </div>
-          );
-        })}
+                  <div className="relative w-full h-full">
+                    <Image
+                      src={card.imgSrc}
+                      alt={card.title}
+                      fill
+                      className="object-cover"
+                      sizes={`${card.width}px`}
+                    />
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-300" />
+                  </div>
+                </Link>
+
+                {hoveredCard === index && (
+                  <div
+                    ref={(el) => {
+                      titleRefs.current[index] = el;
+                    }}
+                    className="absolute top-1/2 right-[105%] -translate-y-1/2 z-10 pointer-events-none whitespace-nowrap"
+                  >
+                    <h2 className="text-white text-5xl font-bold tracking-tight drop-shadow-2xl">
+                      {card.title}
+                    </h2>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

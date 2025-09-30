@@ -82,8 +82,8 @@ export const BrandsSlider = () => {
           ease: "power3.out",
           scrollTrigger: {
             trigger: section,
-            start: "top 70%",
-            end: "top 30%",
+            start: "top 40%",
+            end: "top 0%",
             scrub: 1,
           },
         }
