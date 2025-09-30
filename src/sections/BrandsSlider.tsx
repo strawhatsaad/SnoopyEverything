@@ -118,7 +118,7 @@ export const BrandsSlider = () => {
         ease: "none",
         scrollTrigger: {
           trigger: section,
-          start: "top -15%",
+          start: "top -10%",
           end: () => `+=${scrollDistance + window.innerHeight * 1.5}`,
           scrub: 1,
           pin: true,

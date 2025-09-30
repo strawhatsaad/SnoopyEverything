@@ -5,11 +5,11 @@ import Image, { StaticImageData } from "next/image";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 
-import logo from "@/assets/snoopy.png";
-import logoApex from "@/assets/logo-apex.png";
-import logoCelestial from "@/assets/logo-celestial.png";
-import logoPulse from "@/assets/logo-pulse.png";
-import logoQuantum from "@/assets/logo-quantum.png";
+import logo from "@/assets/header-logo-light.png";
+import logoApex from "@/assets/header-logo-light.png";
+import logoCelestial from "@/assets/header-logo-light.png";
+import logoPulse from "@/assets/header-logo-light.png";
+import logoQuantum from "@/assets/header-logo-light.png";
 
 // Define a type for our logo objects for better type safety
 interface Logo {
@@ -205,7 +205,7 @@ export const LogoCarousel = () => {
   return (
     <section
       ref={containerRef}
-      className="grid grid-cols-1 lg:grid-cols-2 gap-x-72 min-h-screen place-items-center bg-[#f5f5f5] overflow-clip"
+      className="grid grid-cols-1 lg:grid-cols-2 gap-x-72 min-h-screen place-items-center bg-[#080808] overflow-clip"
     >
       {/* Left Column */}
       <div className="relative flex items-center justify-center w-full h-[700px]">
@@ -220,11 +220,11 @@ export const LogoCarousel = () => {
         <div ref={rotationRef} className="absolute w-full h-full">
           {smallLogos.map((logoItem, index) => {
             const angle = (index / smallLogos.length) * 360;
-            const lgRadius = 600;
+            const lgRadius = 650;
             return (
               <div
                 key={`${logoItem.alt}-${index}`}
-                className="small-logo-item absolute top-1/2 left-1/2 bg-white p-4 rounded-lg shadow-md border-border-gray-200 cursor-pointer"
+                className="small-logo-item absolute top-1/2 left-1/2 bg-transparent p-4 rounded-lg shadow-md border-border-gray-200 cursor-pointer"
                 onClick={() => setSelectedLogo(logoItem)}
                 style={
                   {
@@ -273,7 +273,7 @@ export const LogoCarousel = () => {
 
         <p
           ref={descRef}
-          className="text-neutral-600 text-lg max-w-xs"
+          className="text-white text-lg max-w-xs pt-6"
           style={{ minHeight: "150px" }} // Set min-height to prevent jumping
         >
           {defaultDescription}
