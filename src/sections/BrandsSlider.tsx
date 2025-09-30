@@ -116,34 +116,34 @@ export const BrandsSlider = () => {
           }
         );
 
-        // Hover effects (raise + description wave)
-        const descSpans = card.querySelectorAll(".brand-desc span");
+        const descSpans = card.querySelectorAll(".desc-letter");
 
+        // Make sure they start hidden
+        gsap.set(descSpans, { opacity: 0, y: 20 });
+
+        // Hover enter
         card.addEventListener("mouseenter", () => {
           gsap.to(card, {
             y: -20,
-            duration: 0.4,
+            duration: 0.3,
             ease: "power3.out",
           });
 
-          gsap.fromTo(
-            descSpans,
-            { y: 20, opacity: 0 },
-            {
-              y: 0,
-              opacity: 1,
-              stagger: 0.015,
-              duration: 0.25,
-              ease: "power3.out",
-              overwrite: true,
-            }
-          );
+          gsap.to(descSpans, {
+            y: 0,
+            opacity: 1,
+            stagger: 0.02,
+            duration: 0.25,
+            ease: "power3.out",
+            overwrite: true,
+          });
         });
 
+        // Hover leave
         card.addEventListener("mouseleave", () => {
           gsap.to(card, {
             y: 0,
-            duration: 0.4,
+            duration: 0.3,
             ease: "power3.out",
           });
 
@@ -173,7 +173,7 @@ export const BrandsSlider = () => {
         },
       });
     },
-    { scope: sectionRef, dependencies: [] }
+    { scope: sectionRef }
   );
 
   return (
@@ -219,11 +219,18 @@ export const BrandsSlider = () => {
                     {brand.title}
                   </h3>
 
-                  {/* Description (hidden by default, animated in) */}
-                  <p className="brand-desc text-lg text-white mt-4 flex flex-wrap gap-[2px]">
-                    {brand.description.split("").map((char, idx) => (
-                      <span key={idx} className="inline-block opacity-0">
-                        {char}
+                  {/* Description */}
+                  <p className="brand-desc text-lg text-white mt-4 flex flex-wrap gap-2">
+                    {brand.description.split(" ").map((word, wIndex) => (
+                      <span key={wIndex} className="inline-block">
+                        {word.split("").map((char, cIndex) => (
+                          <span
+                            key={cIndex}
+                            className="inline-block desc-letter"
+                          >
+                            {char}
+                          </span>
+                        ))}
                       </span>
                     ))}
                   </p>
