@@ -66,7 +66,7 @@ export const Testimonials = () => {
           scrollTrigger: {
             trigger: section,
             start: "top 40%",
-            end: "top 0%",
+            end: "top 10%",
             scrub: 1,
           },
         }
@@ -92,7 +92,7 @@ export const Testimonials = () => {
           ease: "power3.out",
           scrollTrigger: {
             trigger: section,
-            start: "top 20%",
+            start: "top 30%",
             end: "top -10%",
             scrub: 1,
           },
