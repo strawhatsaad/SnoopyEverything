@@ -59,6 +59,7 @@ export const InteractiveGrid = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const titleRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
+  const cardRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
 
   useGSAP(
     () => {
@@ -136,6 +137,8 @@ export const InteractiveGrid = () => {
     () => {
       if (hoveredCard !== null) {
         const titleEl = titleRefs.current[hoveredCard];
+        const cardEl = cardRefs.current[hoveredCard];
+
         if (titleEl) {
           gsap.fromTo(
             titleEl,
@@ -151,6 +154,25 @@ export const InteractiveGrid = () => {
             }
           );
         }
+
+        if (cardEl) {
+          gsap.to(cardEl, {
+            scale: 1.12,
+            duration: 0.4,
+            ease: "power2.out",
+          });
+        }
+      } else {
+        // Reset all cards when no hover
+        Object.values(cardRefs.current).forEach((cardEl) => {
+          if (cardEl) {
+            gsap.to(cardEl, {
+              scale: 1,
+              duration: 0.4,
+              ease: "power2.out",
+            });
+          }
+        });
       }
     },
     { dependencies: [hoveredCard] }
@@ -174,7 +196,7 @@ export const InteractiveGrid = () => {
       top: number;
       card: (typeof cards)[0];
     }> = [];
-    const margin = 50; // Minimum space between cards
+    const margin = 70; // Slightly increased minimum space between cards
 
     infiniteCards.forEach((card, index) => {
       let attempts = 0;
@@ -241,6 +263,9 @@ export const InteractiveGrid = () => {
           return (
             <div
               key={`${card.id}-${index}`}
+              ref={(el) => {
+                cardRefs.current[index] = el;
+              }}
               className="absolute"
               style={{
                 left: `${position.left}px`,
@@ -260,7 +285,7 @@ export const InteractiveGrid = () => {
                     src={card.imgSrc}
                     alt={card.title}
                     fill
-                    className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+                    className="object-cover"
                     sizes={`${card.width}px`}
                   />
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-300" />
