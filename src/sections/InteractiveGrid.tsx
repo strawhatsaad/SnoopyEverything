@@ -563,80 +563,81 @@ export const InteractiveGrid = () => {
 
         <div
           ref={modalContentRef}
-          className="relative w-[90vw] h-[85vh] bg-black rounded-2xl overflow-hidden flex"
+          className="relative w-[90vw] h-[85vh] bg-black rounded-2xl flex overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
-          <div
-            ref={scrollContainerRef}
-            className="w-1/2 h-full overflow-y-scroll p-16"
-            style={{
-              scrollbarWidth: "thin",
-              scrollbarColor: "#444 #000",
-              overscrollBehavior: "contain",
-            }}
-            onWheel={(e) => e.stopPropagation()}
-          >
-            <div className="sticky -top-20 bg-black pb-8 pt-4 z-10 -mt-20 -mx-16 px-16 mb-8">
+          <div className="w-1/2 h-full relative flex flex-col">
+            <div className="absolute top-0 left-0 right-0 bg-black z-20 px-16 pt-16 pb-8">
               <h2 ref={modalTitleRef} className="text-6xl font-bold text-white">
                 {selectedCard?.title}
               </h2>
             </div>
 
-            <div className="space-y-8 pb-16">
-              <div>
-                <h3 className="text-2xl font-semibold text-white mb-3">
-                  Overview
-                </h3>
-                <p
-                  ref={(el) => {
-                    modalDescriptionRefs.current.overview = el;
-                  }}
-                  className="text-gray-300 text-lg leading-relaxed"
-                >
-                  {selectedCard?.description.overview}
-                </p>
-              </div>
+            <div
+              ref={scrollContainerRef}
+              className="flex-1 overflow-y-scroll px-16 pt-48 pb-16"
+              style={{
+                scrollbarWidth: "thin",
+                scrollbarColor: "#444 #000",
+              }}
+              onWheel={(e) => e.stopPropagation()}
+            >
+              <div className="space-y-8">
+                <div>
+                  <h3 className="text-2xl font-semibold text-white mb-3">
+                    Overview
+                  </h3>
+                  <p
+                    ref={(el) => {
+                      modalDescriptionRefs.current.overview = el;
+                    }}
+                    className="text-gray-300 text-lg leading-relaxed"
+                  >
+                    {selectedCard?.description.overview}
+                  </p>
+                </div>
 
-              <div>
-                <h3 className="text-2xl font-semibold text-white mb-3">
-                  Challenge
-                </h3>
-                <p
-                  ref={(el) => {
-                    modalDescriptionRefs.current.challenge = el;
-                  }}
-                  className="text-gray-300 text-lg leading-relaxed"
-                >
-                  {selectedCard?.description.challenge}
-                </p>
-              </div>
+                <div>
+                  <h3 className="text-2xl font-semibold text-white mb-3">
+                    Challenge
+                  </h3>
+                  <p
+                    ref={(el) => {
+                      modalDescriptionRefs.current.challenge = el;
+                    }}
+                    className="text-gray-300 text-lg leading-relaxed"
+                  >
+                    {selectedCard?.description.challenge}
+                  </p>
+                </div>
 
-              <div>
-                <h3 className="text-2xl font-semibold text-white mb-3">
-                  Solution
-                </h3>
-                <p
-                  ref={(el) => {
-                    modalDescriptionRefs.current.solution = el;
-                  }}
-                  className="text-gray-300 text-lg leading-relaxed"
-                >
-                  {selectedCard?.description.solution}
-                </p>
-              </div>
+                <div>
+                  <h3 className="text-2xl font-semibold text-white mb-3">
+                    Solution
+                  </h3>
+                  <p
+                    ref={(el) => {
+                      modalDescriptionRefs.current.solution = el;
+                    }}
+                    className="text-gray-300 text-lg leading-relaxed"
+                  >
+                    {selectedCard?.description.solution}
+                  </p>
+                </div>
 
-              <div>
-                <h3 className="text-2xl font-semibold text-white mb-3">
-                  Results
-                </h3>
-                <p
-                  ref={(el) => {
-                    modalDescriptionRefs.current.results = el;
-                  }}
-                  className="text-gray-300 text-lg leading-relaxed"
-                >
-                  {selectedCard?.description.results}
-                </p>
+                <div>
+                  <h3 className="text-2xl font-semibold text-white mb-3">
+                    Results
+                  </h3>
+                  <p
+                    ref={(el) => {
+                      modalDescriptionRefs.current.results = el;
+                    }}
+                    className="text-gray-300 text-lg leading-relaxed"
+                  >
+                    {selectedCard?.description.results}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
