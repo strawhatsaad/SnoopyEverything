@@ -4,12 +4,19 @@ import { useRef, useState } from "react";
 import Image, { StaticImageData } from "next/image";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import logo from "@/assets/header-logo-light.png";
-import logoApex from "@/assets/header-logo-light.png";
-import logoCelestial from "@/assets/header-logo-light.png";
-import logoPulse from "@/assets/header-logo-light.png";
-import logoQuantum from "@/assets/header-logo-light.png";
+import logoAgency from "@/assets/SnoopyLogo01.png";
+import logoCircle from "@/assets/SnoopyLogo02.png";
+import logoEverything from "@/assets/SnoopyLogo03.png";
+import logoRetreats from "@/assets/SnoopyLogo04.png";
+import logoWeddings from "@/assets/SnoopyLogo05.png";
+import logoBeats from "@/assets/SnoopyLogo06.png";
+import logoProductions from "@/assets/SnoopyLogo07.png";
+
+// Register ScrollTrigger plugin
+gsap.registerPlugin(ScrollTrigger);
 
 // Define a type for our logo objects for better type safety
 interface Logo {
@@ -20,101 +27,46 @@ interface Logo {
 
 const smallLogos: Logo[] = [
   {
-    src: logoApex,
-    alt: "Apex",
+    src: logoAgency,
+    alt: "Snoopy Agency",
     description:
-      "Apex drives innovation with cutting-edge solutions, pushing the boundaries of what's possible in the tech industry.",
+      "Snoopy Agency is a creative hub, driving playful and effective campaigns with its signature charm and wit.",
   },
   {
-    src: logoCelestial,
-    alt: "Celestial",
+    src: logoCircle,
+    alt: "Snoopy Circle",
     description:
-      "Celestial provides cloud-based services that are scalable, secure, and designed for the future of digital infrastructure.",
+      "Snoopy Circle represents community and warmth, connecting fans and friends in a trusted, friendly network.",
   },
   {
-    src: logoPulse,
-    alt: "Pulse",
+    src: logoEverything,
+    alt: "Snoopy Everything",
     description:
-      "Pulse is at the heart of data analytics, offering real-time insights and metrics to help businesses thrive.",
+      "Snoopy Everything offers a complete, whimsical range of products and services, covering all your needs with fun.",
   },
   {
-    src: logoQuantum,
-    alt: "Quantum",
+    src: logoRetreats,
+    alt: "Snoopy Retreats",
     description:
-      "Quantum revolutionizes computing with next-generation processing power, tackling complex problems with ease.",
-  },
-  // Duplicates for carousel
-  {
-    src: logoApex,
-    alt: "Apex",
-    description:
-      "Apex drives innovation with cutting-edge solutions, pushing the boundaries of what's possible in the tech industry.",
+      "Snoopy Retreats provides a peaceful escape, offering relaxing getaways and a chance to recharge with friends.",
   },
   {
-    src: logoCelestial,
-    alt: "Celestial",
+    src: logoWeddings,
+    alt: "Snoopy Weddings",
     description:
-      "Celestial provides cloud-based services that are scalable, secure, and designed for the future of digital infrastructure.",
+      "Snoopy Weddings brings heartwarming joy to special days, planning events with love, laughter, and a unique touch.",
   },
   {
-    src: logoPulse,
-    alt: "Pulse",
+    src: logoBeats,
+    alt: "Snoopy Beats",
     description:
-      "Pulse is at the heart of data analytics, offering real-time insights and metrics to help businesses thrive.",
+      "Snoopy Beats sets the rhythm for fun, offering a lively selection of music, sound, and entertainment for any event.",
   },
   {
-    src: logoQuantum,
-    alt: "Quantum",
+    src: logoProductions,
+    alt: "Snoopy Productions",
     description:
-      "Quantum revolutionizes computing with next-generation processing power, tackling complex problems with ease.",
-  },
-  {
-    src: logoApex,
-    alt: "Apex",
-    description:
-      "Apex drives innovation with cutting-edge solutions, pushing the boundaries of what's possible in the tech industry.",
-  },
-  {
-    src: logoCelestial,
-    alt: "Celestial",
-    description:
-      "Celestial provides cloud-based services that are scalable, secure, and designed for the future of digital infrastructure.",
-  },
-  {
-    src: logoPulse,
-    alt: "Pulse",
-    description:
-      "Pulse is at the heart of data analytics, offering real-time insights and metrics to help businesses thrive.",
-  },
-  {
-    src: logoQuantum,
-    alt: "Quantum",
-    description:
-      "Quantum revolutionizes computing with next-generation processing power, tackling complex problems with ease.",
-  },
-  {
-    src: logoApex,
-    alt: "Apex",
-    description:
-      "Apex drives innovation with cutting-edge solutions, pushing the boundaries of what's possible in the tech industry.",
-  },
-  {
-    src: logoCelestial,
-    alt: "Celestial",
-    description:
-      "Celestial provides cloud-based services that are scalable, secure, and designed for the future of digital infrastructure.",
-  },
-  {
-    src: logoPulse,
-    alt: "Pulse",
-    description:
-      "Pulse is at the heart of data analytics, offering real-time insights and metrics to help businesses thrive.",
-  },
-  {
-    src: logoQuantum,
-    alt: "Quantum",
-    description:
-      "Quantum revolutionizes computing with next-generation processing power, tackling complex problems with ease.",
+      "Snoopy Productions crafts engaging stories and content, delivering high-quality, charming media for all audiences.",
   },
 ];
 
@@ -125,25 +77,41 @@ export const LogoCarousel = () => {
   const containerRef = useRef(null);
   const rotationRef = useRef(null);
   const descRef = useRef<HTMLParagraphElement>(null);
-  const logoContainerRef = useRef<HTMLDivElement>(null); // 👈 1. New ref for the logo container
+  const logoContainerRef = useRef<HTMLDivElement>(null);
 
   const [selectedLogo, setSelectedLogo] = useState<Logo | null>(null);
 
   useGSAP(
     () => {
-      gsap.to(rotationRef.current, {
-        rotation: -360,
-        duration: 60,
-        ease: "none",
-        repeat: -1,
+      // Create a timeline with a single ScrollTrigger
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top top",
+          end: "+=4000", // Scroll 2000px to complete one full rotation
+          scrub: 1,
+          pin: true, // Pin the section in place
+          anticipatePin: 1,
+        },
       });
 
-      gsap.to(".small-logo-item", {
-        rotation: 360,
-        duration: 60,
-        ease: "none",
-        repeat: -1,
-      });
+      // Add both rotations to the same timeline
+      tl.to(
+        rotationRef.current,
+        {
+          rotation: -360,
+          ease: "none",
+        },
+        0
+      ) // Start at time 0
+        .to(
+          ".small-logo-item",
+          {
+            rotation: 360,
+            ease: "none",
+          },
+          0
+        ); // Also start at time 0 (parallel animation)
     },
     { scope: containerRef }
   );
@@ -178,7 +146,7 @@ export const LogoCarousel = () => {
             descElement.appendChild(document.createTextNode(" "));
           });
 
-          // 👇 3. Animate the logo and text back in
+          // Animate the logo and text back in
           gsap.to(descElement, { opacity: 1, duration: 0.2 });
 
           // Animate the new logo with a subtle slide-up effect
@@ -243,8 +211,8 @@ export const LogoCarousel = () => {
                 <Image
                   src={logoItem.src}
                   alt={logoItem.alt}
-                  width={120}
-                  height={60}
+                  width={200}
+                  height={100}
                   className="object-contain"
                 />
               </div>
@@ -254,12 +222,8 @@ export const LogoCarousel = () => {
       </div>
 
       {/* Right Column: Description */}
-      {/* 👇 2. Updated JSX for the description area */}
       <div className="flex flex-col items-center justify-center lg:items-start text-center lg:text-left">
-        <div
-          ref={logoContainerRef}
-          className="h-[100px] opacity-0" // Set height to prevent layout shift and start invisible
-        >
+        <div ref={logoContainerRef} className="h-[100px] opacity-0">
           {selectedLogo && (
             <Image
               src={selectedLogo.src}
@@ -274,7 +238,7 @@ export const LogoCarousel = () => {
         <p
           ref={descRef}
           className="text-white text-lg max-w-xs pt-6"
-          style={{ minHeight: "150px" }} // Set min-height to prevent jumping
+          style={{ minHeight: "150px" }}
         >
           {defaultDescription}
         </p>
