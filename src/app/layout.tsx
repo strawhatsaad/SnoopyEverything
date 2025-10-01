@@ -4,6 +4,7 @@ import "./globals.css";
 import { twMerge } from "tailwind-merge";
 import SmoothScroll from "@/components/SmoothScroll";
 import { Header } from "@/sections/Header"; // Add this import
+import { Footer } from "@/sections/Footer";
 
 const dmSans = DM_Sans({ subsets: ["latin"] });
 
@@ -23,6 +24,7 @@ export default function RootLayout({
         <SmoothScroll>
           <Header />
           {children}
+          <Footer />
         </SmoothScroll>
       </body>
     </html>
