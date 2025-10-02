@@ -240,7 +240,7 @@ export const LogoCarousel = () => {
           className="text-white text-lg max-w-xs pt-6"
           style={{ minHeight: "150px" }}
         >
-          {defaultDescription}
+          {/* {defaultDescription} */}
         </p>
       </div>
     </section>
