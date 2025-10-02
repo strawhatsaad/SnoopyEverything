@@ -6,6 +6,7 @@ import Image from "next/image";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import headerLogo from "@/assets/SnoopyLogo03.png";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -206,7 +207,7 @@ export const Header = () => {
           {/* Logo for dark backgrounds (white/light version) */}
           <div ref={logoLightRef} className="absolute inset-0">
             <Image
-              src="/header-logo-light.png" // Replace with your light logo path
+              src={headerLogo} // Replace with your light logo path
               alt="Snoopy Everything"
               fill
               className="object-contain object-left"
